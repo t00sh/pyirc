@@ -60,6 +60,18 @@ if __name__ == '__main__':
 
          - __handler__ : the function handler (type function(IRC, dict))
 
+         The second parameter is the parsed IRC message, viewed as a dictionnary. It has the following fields :
+
+             - __full__ : the raw message (type str)
+
+             - __host__ : the host from where the message come from (type str)
+
+             - __cmd__ : the IRC command (PRIVMSG, MODE, JOIN, etc) (type str)
+
+             - __args__ : arguments of the command (type str)
+
+             - __content__ : content of the message (type str)
+
     - __`set_timer(self, handler, seconds)`__ : Add function to be executed every X seconds
 
          - __handler__ : the function to be called (type function(IRC))
