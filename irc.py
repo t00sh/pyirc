@@ -19,6 +19,7 @@ class IRC:
         self.handlers = dict()
         self.timers = []
         self.channels = channels
+        self.recv_buffer = ''
 
         logging.basicConfig(format='[%(levelname)s] %(message)s',
                             level=log_level)
@@ -46,32 +47,41 @@ class IRC:
                             'seconds': seconds,
                             'next': int(time.time()) + seconds})
 
+    def __parse_irc_msg(self, data):
+        msg = {'full': data[:]}
+
+        if data[0] == ':':
+            i = data.index(' ')
+            msg['host'] = data[1:i]
+            data = data[i+1:]
+
+        i = data.index(' ')
+        msg['cmd'] = data[:i]
+        data = data[i+1:]
+
+        i = data.find(':')
+        if i >= 0:
+            msg['args'] = filter(lambda x: len(x), data[:i].split(" "))
+            msg['content'] = data[i+1:]
+        else:
+            msg['args'] = filter(lambda x: len(x), data.split(" "))
+
+        return msg
+
+
     def __parse_data(self, data):
         msgs = []
-        data = data.decode('utf-8')
-        for d in data.split("\r\n"):
-            if len(d) == 0:
-                continue
+        data = data.decode('utf-8', 'backslashreplace')
+        data = self.recv_buffer + data
 
-            msg = {'full': d[:]}
-
-            if d[0] == ':':
-                i = d.index(' ')
-                msg['host'] = d[1:i]
-                d = d[i+1:]
-
-            i = d.index(' ')
-            msg['cmd'] = d[:i]
-            d = d[i+1:]
-
-            try:
-                i = d.index(':')
-                msg['args'] = filter(lambda x: len(x), d[:i].split(" "))
-                msg['content'] = d[i+1:]
-            except:
-                msg['args'] = filter(lambda x: len(x), d.split(" "))
-
-            msgs.append(msg)
+        while len(data) > 0:
+            i = data.find("\r\n")
+            if i >= 0:
+                msgs.append(self.__parse_irc_msg(data[:i]))
+                data = data[i+2:]
+            else:
+                self.recv_buffer = data
+                data = ''
         return msgs
 
     def __execute_handlers(self, msgs):
