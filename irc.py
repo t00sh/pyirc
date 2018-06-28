@@ -1,3 +1,4 @@
+import codecs
 import socket
 import select
 import logging
@@ -8,6 +9,16 @@ def handler_ping(irc, msg):
 
 def handler_376(irc, msg):
     irc.join(irc.channels)
+
+def utf8_error(ex):
+    bstr,start,end = ex.object,ex.start,ex.end
+    str_res = u''
+    for c in bstr[start:end]:
+        if isinstance(c, int):
+            str_res += '\\x{:02x}'.format(c)
+        else:
+            str_res += '\\x{:02x}'.format(ord(c))
+    return str_res, end
 
 class IRC:
     def __init__(self, user, nick, host, port=6667,
@@ -21,6 +32,7 @@ class IRC:
         self.channels = channels
         self.recv_buffer = ''
 
+        codecs.register_error('utf8-replace', utf8_error)
         logging.basicConfig(format='[%(levelname)s] %(message)s',
                             level=log_level)
 
@@ -71,7 +83,7 @@ class IRC:
 
     def __parse_data(self, data):
         msgs = []
-        data = data.decode('utf-8', 'backslashreplace')
+        data = data.decode('utf-8', 'utf8-replace')
         data = self.recv_buffer + data
         self.recv_buffer = ''
 
