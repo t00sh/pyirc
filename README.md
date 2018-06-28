@@ -9,7 +9,7 @@ from irc import IRC
 import logging
 
 def handler_privmsg(irc, msg):
-    if msg['args'][0] == '#mychannel']:
+    if msg['args'][0] == '#mychannel':
         irc.privmsg('#mychannel', msg['content'])
 
 if __name__ == '__main__':
