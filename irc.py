@@ -61,10 +61,10 @@ class IRC:
 
         i = data.find(':')
         if i >= 0:
-            msg['args'] = filter(lambda x: len(x), data[:i].split(" "))
+            msg['args'] = list(filter(lambda x: len(x), data[:i].split(" ")))
             msg['content'] = data[i+1:]
         else:
-            msg['args'] = filter(lambda x: len(x), data.split(" "))
+            msg['args'] = list(filter(lambda x: len(x), data.split(" ")))
 
         return msg
 
@@ -73,6 +73,7 @@ class IRC:
         msgs = []
         data = data.decode('utf-8', 'backslashreplace')
         data = self.recv_buffer + data
+        self.recv_buffer = ''
 
         while len(data) > 0:
             i = data.find("\r\n")
