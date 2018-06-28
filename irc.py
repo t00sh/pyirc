@@ -33,7 +33,7 @@ class IRC:
 
     def send(self, msg):
         logging.info(">>> %s" % (msg))
-        self.sock.send(msg + "\r\n")
+        self.sock.send(msg.encode('utf-8') + b"\r\n")
 
     def set_handler(self, cmd, handler):
         if cmd in self.handlers:
@@ -48,6 +48,7 @@ class IRC:
 
     def __parse_data(self, data):
         msgs = []
+        data = data.decode('utf-8')
         for d in data.split("\r\n"):
             if len(d) == 0:
                 continue
