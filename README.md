@@ -26,6 +26,51 @@ if __name__ == '__main__':
 
 -----------------------------
 
+# API
+
+`class IRC`
+
+- __`__init__(self, user, nick, host, port, channels, log_level)`__ : Constructor
+
+    - __user__ : IRC user (type str)
+
+    - __nick__ : IRC nick (type str)
+
+    - __host__ : server host (type str)
+
+    - __port__ : server port (type int)
+
+    - __channels__ : list of channels to join (type str list)
+
+    - __log_level__ : level of logging (constants logging.DEBUG, logging.WARNING, etc...)
+
+    - __`send(self, msg)`__ : Send an IRC msg
+
+         - __msg__ : message to send without "\\r\\n" (type str)
+
+    - __`privmsg(self, to, msg)`__ : Send a PRIVMSG to channel or nick
+
+         - __to__ : channel or nick to send (type str)
+
+         - __msg__ : message to send (type str)
+
+    - __`set_handler(self, cmd, handler)`__ : Add event handler when handling IRC command
+
+         - __cmd__ : the command triggering the handler (type str)
+
+         - __handler__ : the function handler (type function(IRC, dict))
+
+    - __`set_timer(self, handler, seconds)`__ : Add function to be executed every X seconds
+
+         - __handler__ : the function to be called (type function(IRC))
+
+         - __seconds__ : number of seconds between each call (type int)
+
+
+    - __`loop(self)`__ : Infinite loop, handling commands and timers.
+
+-----------------------------
+
   - __author__ : Tosh
 
   - __license__ : GPL
